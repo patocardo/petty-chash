@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\User;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Foundation\Auth\RegistersUsers ;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\Auth\UserController;
+use Exception;
 
 class RegisterController extends Controller
 {
@@ -46,6 +48,8 @@ class RegisterController extends Controller
      *
      * @param  array  $data
      * @return \Illuminate\Contracts\Validation\Validator
+     *
+     * TODO: merge with UserRequest
      */
     protected function validator(array $data)
     {
@@ -64,10 +68,18 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['password']),
-        ]);
+        try {
+            $user = UserController::createOrUpdate(array_merge($data, ['roles' => []]));
+            return response()->json([
+                'type' => 'success',
+                'data' => $user
+            ]);
+        } catch (Exception $err) {
+            return response()->json([
+                'type' => 'error',
+                'errors' => [$err->message]
+            ]);
+        }
+
     }
 }
