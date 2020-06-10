@@ -14,16 +14,18 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::group(['middleware' => 'auth:api'], function () {
-    Route::post('logout', 'Auth\LoginController@logout');
+    Route::post('logout', 'Auth\LoginController@logout')->name('logout_api');
 
-    Route::get('/user', 'Auth\UserController@current');
+    Route::get('/user', 'Auth\UserController@current')->name('user.current');
+    Route::post('/user', 'Auth\UserController@upsert')->name('user.upsert');
+    Route::delete('/users', 'Auth\UserController@destroy')->name('user.destroy');
 
     Route::patch('settings/profile', 'Settings\ProfileController@update');
     Route::patch('settings/password', 'Settings\PasswordController@update');
 });
 
 Route::group(['middleware' => 'guest:api'], function () {
-    Route::post('login', 'Auth\LoginController@login');
+    Route::post('login', 'Auth\LoginController@login')->name('login_api');;
     Route::post('register', 'Auth\RegisterController@register');
 
     Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail');

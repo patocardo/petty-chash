@@ -2,53 +2,28 @@
 
 namespace Tests\Browser;
 
-use App\User;
-use Tests\Browser\Pages\Home;
-use Tests\Browser\Pages\Login;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
 
 class LoginTest extends DuskTestCase
 {
-    public function setUp(): void
+    /**
+     * A Dusk test example.
+     *
+     * @return voidging
+     */
+    public function testLo()
     {
-        parent::setup();
+        $this->browse(function (Browser $browser) {
 
-        static::closeAll();
-    }
-
-    /** @test */
-    public function login_with_valid_credentials()
-    {
-        $user = factory(User::class)->create();
-
-        $this->browse(function ($browser) use ($user) {
-            $browser->visit(new Login)
-                ->submit($user->email, 'password')
-                ->assertPageIs(Home::class);
-        });
-    }
-
-    /** @test */
-    public function login_with_invalid_credentials()
-    {
-        $this->browse(function ($browser) {
-            $browser->visit(new Login)
-                ->submit('test@test.app', 'password')
-                ->assertSee('These credentials do not match our records.');
-        });
-    }
-
-    /** @test */
-    public function log_out_the_user()
-    {
-        $user = factory(User::class)->create();
-
-        $this->browse(function ($browser) use ($user) {
-            $browser->visit(new Login)
-                ->submit($user->email, 'password')
-                ->on(new Home)
-                ->clickLogout()
-                ->assertPageIs(Login::class);
+            $browser->visit('/login')
+                ->waitForText('Log In')
+                ->type('email', getenv('SUDO_EMAIL'))
+                ->type('password', getenv('SUDO_PASS'))
+                ->click('button[type="submit"]')
+                ->waitForText('Home')
+                ->assertSee('logged in');
         });
     }
 }
