@@ -15,8 +15,8 @@ class UserSeeder extends Seeder
     {
         $user = User::create([
             'name' => 'Codigitar',
-            'email' => $_ENV['SUDO_EMAIL'],
-            'password' => bcrypt($_ENV['SUDO_PASS'])
+            'email' => getenv('SUDO_EMAIL'),
+            'password' => bcrypt(getenv('SUDO_PASS'))
         ]);
         $superAdmin = Role::where('name', 'Super Admin')->first();
         $user->assignRole($superAdmin);
